@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Caça aos Corações — 8 Meses 💖</title>
+  <style>
+    :root{
+      --bg:#FFF0F6;--card:#ffffff;--accent:#ff6b93;--muted:#8a8a8a;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      height:100vh;
+      background:radial-gradient(circle at 10% 10%, #fff6f9 0%, var(--bg) 40%), linear-gradient(180deg, #ffeef4 0%, #fff 100%);
+      font-family: 'Poppins', system-ui, sans-serif;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .app{
+      width:100%;max-width:420px;
+      background:var(--card);
+      border-radius:18px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12);
+      overflow:hidden;
+    }
+    header{
+      padding:18px 20px;
+      border-bottom:1px solid #ffe6ed;
+      display:flex;align-items:center;gap:12px;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:10px;
+      background:linear-gradient(135deg,#ffb3c9,#ff7aa0);
+      display:flex;align-items:center;justify-content:center;
+      font-size:28px;color:white;
+    }
+    .title{font-size:16px;font-weight:700}
+    .subtitle{font-size:12px;color:var(--muted)}
+
+    .play-area{position:relative;height:520px;padding:18px;display:flex;flex-direction:column;gap:12px}
+    .topbar{display:flex;justify-content:space-between;align-items:center}
+    .counter{font-weight:700;color:var(--accent)}
+    .goal{font-size:13px;color:#ff8fb0}
+    .arena{
+      position:relative;flex:1;
+      border-radius:12px;background:#fffafc;
+      border:1px dashed #ffdce6;
+      overflow:hidden;
+    }
+
+    .heart{
+      position:absolute;cursor:pointer;
+      font-size:28px;
+      transition:transform 0.2s, opacity 0.3s;
+    }
+    .heart.pop{transform:scale(1.3);}
+    .heart.fade{opacity:0;transform:scale(0.6);}
+
+    footer{padding:12px 18px;border-top:1px solid #ffe6ed;display:flex;gap:8px;align-items:center}
+    .hint{font-size:13px;color:var(--muted);flex:1}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+
+    .overlay{
+      position:absolute;inset:0;
+      background:rgba(0,0,0,0.45);
+      display:flex;align-items:center;justify-content:center;
+      padding:22px;opacity:0;pointer-events:none;
+      transition:opacity 250ms ease;
+    }
+    .overlay.show{opacity:1;pointer-events:auto}
+    .card{
+      width:100%;max-width:380px;
+      background:linear-gradient(180deg,#fff,#fffaf7);
+      padding:18px;border-radius:16px;
+      box-shadow:0 20px 40px rgba(0,0,0,0.2);
+      text-align:center;
+    }
+    .photo{
+      width:120px;height:120px;
+      border-radius:14px;object-fit:cover;
+      margin:0 auto;display:block;
+      box-shadow:0 8px 20px rgba(0,0,0,0.12);
+    }
+    .letter{margin-top:14px;text-align:left;min-height:96px}
+    .typed{white-space:pre-wrap;font-size:15px;line-height:1.4;color:#333}
+    .close{margin-top:14px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo">❤</div>
+      <div>
+        <div class="title">Caça aos Corações</div>
+        <div class="subtitle">Colete corações para desbloquear a surpresa</div>
+      </div>
+    </header>
+
+    <main class="play-area">
+      <div class="topbar">
+        <div class="goal">Meta: <span id="goalNum">10</span> corações</div>
+        <div class="counter">Coletados: <span id="count">0</span></div>
+      </div>
+
+      <div class="arena" id="arena">
+        <div class="overlay" id="overlay">
+          <div class="card">
+            <img src="Foto8meses.png" alt="Foto de vocês" class="photo" id="photo">
+            <h3>Para a garota mais linda do mundo 💖</h3>
+            <div class="letter"><div class="typed" id="typed"></div></div>
+            <div class="close"><button class="btn" id="btnClose">Fechar</button></div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="hint">Toque nos corações e descubra sua surpresa ✨</div>
+        <button class="btn" id="restart">Reiniciar</button>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const GOAL = 10;
+    const SPAWN_INTERVAL_MS = 900;
+    const MAX_HEARTS = 6;
+
+    const LETTER_TEXT = `Meu amor,\n\nHoje completamos 8 meses juntos, e eu só consigo pensar em como sou sortudo por ter você na minha vida.\nCada momento ao seu lado é único — até os mais simples se tornam especiais quando estou com você.\n\nSeu sorriso é o meu ponto de paz, seu abraço é o meu refúgio e seu amor é o que dá cor a tudo ao meu redor.\n\nObrigado por ser quem você é — por me fazer rir, por cuidar de mim, e por me fazer sentir tão amado.\n\nQue esses 8 meses sejam só o começo de muitos outros ao seu lado.\n\nTe amo mais do que palavras podem explicar. ❤️\n\nCom todo meu amor,\n O homem da sua vida`;
+
+    const arena = document.getElementById('arena');
+    const countEl = document.getElementById('count');
+    const overlay = document.getElementById('overlay');
+    const typedEl = document.getElementById('typed');
+    const restartBtn = document.getElementById('restart');
+    const closeBtn = document.getElementById('btnClose');
+
+    let collected = 0, heartsOnScreen = 0, spawnTimer;
+
+    function spawnHeart() {
+      if (heartsOnScreen >= MAX_HEARTS) return;
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.textContent = '❤';
+      const size = Math.random() * 20 + 24;
+      heart.style.fontSize = size + 'px';
+      heart.style.left = Math.random() * (arena.clientWidth - 30) + 'px';
+      heart.style.top = Math.random() * (arena.clientHeight - 30) + 'px';
+      arena.appendChild(heart);
+      heartsOnScreen++;
+
+      heart.addEventListener('click', () => {
+        heart.classList.add('pop');
+        setTimeout(() => {
+          heart.classList.add('fade');
+          setTimeout(() => {
+            heart.remove();
+            heartsOnScreen--;
+          }, 300);
+        }, 100);
+        collected++;
+        countEl.textContent = collected;
+        if (collected >= GOAL) showLetter();
+      });
+    }
+
+    function startGame() {
+      collected = 0;
+      heartsOnScreen = 0;
+      countEl.textContent = 0;
+      overlay.classList.remove('show');
+      typedEl.textContent = '';
+      spawnTimer = setInterval(spawnHeart, SPAWN_INTERVAL_MS);
+    }
+
+    function showLetter() {
+      clearInterval(spawnTimer);
+      document.querySelectorAll('.heart').forEach(h => h.remove());
+      overlay.classList.add('show');
+      typeText(LETTER_TEXT, typedEl);
+    }
+
+    function typeText(text, el) {
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          el.textContent += text[i];
+          i++;
+          setTimeout(type, 40);
+        }
+      }
+      type();
+    }
+
+    restartBtn.onclick = startGame;
+    closeBtn.onclick = startGame;
+    startGame();
+  </script>
+</body>
+</html>
