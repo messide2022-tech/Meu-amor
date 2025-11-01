@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surpresa de Aniversário 💖</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #ffb6c1, #ffe6f0);
+      font-family: "Poppins", sans-serif;
+      text-align: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    h1 {
+      margin-top: 100px;
+      color: #d63384;
+      font-size: 2em;
+      animation: fadeIn 1.5s ease;
+    }
+    button {
+      background: #ff66a3;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      cursor: pointer;
+      margin-top: 40px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #ff3385;
+      transform: scale(1.05);
+    }
+    #mensagem {
+      display: none;
+      margin-top: 50px;
+      font-size: 1.2em;
+      color: #4a0033;
+      padding: 0 20px;
+      animation: fadeIn 1s ease forwards;
+    }
+    #foto {
+      display: none;
+      margin-top: 30px;
+      width: 250px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <h1>💌 Clique para descobrir sua surpresa 💌</h1>
+  <button onclick="mostrarMensagem()">Revelar 💖</button>
+
+  <div id="mensagem">
+    <p>
+      Meu amor, hoje o dia é todo seu — e eu só quero te lembrar o quanto sou grato por ter você na minha vida. 🌹  
+      Você é o meu motivo de sorrir, minha paz nos dias difíceis e a pessoa que faz tudo valer a pena.  
+      Que esse novo ano traga ainda mais sonhos realizados, alegrias sinceras e momentos lindos ao nosso lado.  
+      Você merece o mundo, e eu prometo fazer de tudo pra te entregar, pedacinho por pedacinho. ❤️  
+      <br><br>
+      <b>Feliz aniversário, minha vida. Te amo mais do que palavras conseguem dizer. 🎂✨</b>
+    </p>
+  </div>
+
+  <img id="foto" src="12.jpg" alt="Nós dois 💞">
+
+  <script>
+    function mostrarMensagem() {
+      document.querySelector("button").style.display = "none";
+      document.getElementById("mensagem").style.display = "block";
+      document.getElementById("foto").style.display = "block";
+    }
+  </script>
+</body>
+</html>
